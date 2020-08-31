@@ -12,20 +12,16 @@ namespace WorkerServiceForAutoGenerateGithubTrash
 {
     public class PushGithubTrashBackgroundService : BackgroundService
     {
-        private readonly ILogger<MonitorWorker> _logger;
+        private readonly ILogger<PushGithubTrashBackgroundService> _logger;
         private Timer _timer;
         private static Config _config;
 
-        public PushGithubTrashBackgroundService(ILogger<MonitorWorker> logger)
+        public PushGithubTrashBackgroundService(ILogger<PushGithubTrashBackgroundService> logger)
         {
             _logger = logger;
-            var jsonString = File.ReadAllText("config.json");
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var jsonString = File.ReadAllText($"{baseDir}/config.json");
             _config = JsonSerializer.Deserialize<Config>(jsonString);
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            await Task.CompletedTask;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
@@ -35,6 +31,11 @@ namespace WorkerServiceForAutoGenerateGithubTrash
             _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(3));
 
             return base.StartAsync(cancellationToken);
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            //await Task.CompletedTask;
         }
 
         private void DoWork(object state)
